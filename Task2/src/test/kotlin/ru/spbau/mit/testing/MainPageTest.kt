@@ -25,22 +25,31 @@ class MainPageTest {
                 .descriptionClick()
                 .apply {
                     checkBasePage()
-                    assert(shortSpecification.isDisplayed)
+                    assert(shortSpecification!!.isDisplayed)
                 }.specificationsClick()
                 .apply {
                     checkBasePage()
+                    assert(fullSpecification!!.isDisplayed)
                 }.offersClick()
                 .apply {
                     checkBasePage()
+                    assert(offersBlock!!.isDisplayed)
                 }.mapClick()
                 .apply {
                     checkBasePage()
+                    assert(mapBlock!!.isDisplayed)
                 }.reviewsClick()
                 .apply {
                     checkBasePage()
+                    assert(reviewsBlock!!.isDisplayed)
+                }.articlesClick()
+                .apply {
+                    checkBasePage()
+                    assert(articlesBlock!!.isDisplayed)
                 }.forumsClick()
                 .apply {
                     checkBasePage()
+                    assert(commentsBlock!!.isDisplayed)
                 }
     }
 

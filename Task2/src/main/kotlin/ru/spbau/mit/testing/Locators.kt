@@ -34,4 +34,16 @@ object Locators {
     val pricesList = By.xpath("""//*[@class="price" and not(@class="price_unactual_yes")]""")
 
     val sortPricesButton = By.xpath("/html/body/div[1]/div[5]/div[1]/div[2]/div[1]/div[1]/div[3]/a")
+
+    val fullSpecs = By.className("n-product-spec-wrap")
+
+    val offersBlock = By.className("i-product-offers")
+
+    val mapBlock = By.className("n-geo")
+
+    val reviewsBlock = By.className("reviews-layout")
+
+    val articlesBlock = By.className("product-articles")
+
+    val commentsBlock = By.className("product-forums")
 }
