@@ -46,4 +46,12 @@ object Locators {
     val articlesBlock = By.className("product-articles")
 
     val commentsBlock = By.className("product-forums")
+
+    val topOffers = By.className("n-product-top-offer")
+
+    val recommentationItems = By.className("n-w-product-recipes-list__item")
+
+    val pricesNextButton = By.className("n-pager__button-next")
+
+    val preloader = By.className("preloadable__preloader")
 }

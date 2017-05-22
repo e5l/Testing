@@ -5,5 +5,5 @@ import ru.spbau.mit.testing.Locators
 
 class ReviewsPage(driver: WebDriver) : BasePage(driver) {
     val reviewsBlock get() = driver.findElement(Locators.reviewsBlock)
-
+    val topOffers get() = driver.findElements(Locators.topOffers)
 }

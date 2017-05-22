@@ -5,4 +5,5 @@ import ru.spbau.mit.testing.Locators
 
 class ArticlesPage(driver: WebDriver) : BasePage(driver) {
     val articlesBlock get() = driver.findElement(Locators.articlesBlock)
+    val topOffers get() = driver.findElements(Locators.topOffers)
 }

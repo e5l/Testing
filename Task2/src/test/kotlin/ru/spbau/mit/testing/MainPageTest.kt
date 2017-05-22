@@ -3,6 +3,8 @@ package ru.spbau.mit.testing
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.openqa.selenium.StaleElementReferenceException
+import org.openqa.selenium.WebElement
 import org.openqa.selenium.remote.DesiredCapabilities
 import org.openqa.selenium.remote.RemoteWebDriver
 import ru.spbau.mit.testing.pages.BasePage
@@ -15,7 +17,7 @@ class MainPageTest {
 
     @Before
     fun init() {
-        browser.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+        browser.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS).pageLoadTimeout(5, TimeUnit.SECONDS).setScriptTimeout(5, TimeUnit.SECONDS)
         browser.get(url)
     }
 
@@ -25,42 +27,61 @@ class MainPageTest {
                 .descriptionClick()
                 .apply {
                     checkBasePage()
-                    assert(shortSpecification!!.isDisplayed)
+                    assert(shortSpecification.isDisplayed)
+                    assert(topOffers.isNotEmpty())
                 }.specificationsClick()
                 .apply {
                     checkBasePage()
                     assert(fullSpecification!!.isDisplayed)
+                    assert(topOffers.isNotEmpty())
+                    assert(recommendations.isNotEmpty())
                 }.offersClick()
                 .apply {
                     checkBasePage()
-                    assert(offersBlock!!.isDisplayed)
+                    assert(offersBlock.isDisplayed)
                 }.mapClick()
                 .apply {
                     checkBasePage()
-                    assert(mapBlock!!.isDisplayed)
+                    assert(mapBlock.isDisplayed)
                 }.reviewsClick()
                 .apply {
                     checkBasePage()
-                    assert(reviewsBlock!!.isDisplayed)
+                    assert(reviewsBlock.isDisplayed)
+                    assert(topOffers.isNotEmpty())
                 }.articlesClick()
                 .apply {
                     checkBasePage()
-                    assert(articlesBlock!!.isDisplayed)
+                    assert(articlesBlock.isDisplayed)
+                    assert(topOffers.isNotEmpty())
                 }.forumsClick()
                 .apply {
                     checkBasePage()
-                    assert(commentsBlock!!.isDisplayed)
+                    assert(commentsBlock.isDisplayed)
+                    assert(topOffers.isNotEmpty())
                 }
     }
 
     @Test
     fun sortedPricesTest() {
-        val offersPage = BasePage(browser).offersClick()
+        var offersPage = BasePage(browser).offersClick()
         offersPage.sortPrices()
-        Thread.sleep(2000)
 
-        val prices = offersPage.prices.map { it.text.split(" ").dropLast(1).joinToString("").toInt() }
-        assert(prices.subList(1, prices.size).isSorted())
+        val prices = mutableListOf<Int>()
+        while (offersPage.driver.findElements(Locators.pricesNextButton).isNotEmpty()) {
+            var current: List<Int>? = null
+            while (current == null) {
+                try {
+                     current = offersPage.prices.map { it.text.split("руб.")[0].filterNot { it == ' ' }.toInt() }
+                } catch (e: StaleElementReferenceException) {}
+            }
+            prices.addAll(current.subList(1, current.size))
+            offersPage = offersPage.loadNextPage()
+        }
+
+        val page = offersPage.prices.map { it.text.split("руб.")[0].filterNot { it == ' ' }.toInt() }
+        prices.addAll(page.subList(1, page.size))
+
+        assert(prices.isSorted())
     }
 
     @After
@@ -71,7 +92,7 @@ class MainPageTest {
 }
 
 private fun <E : Comparable<E>> List<E>.isSorted(): Boolean {
-    return (0..size-2).none { get(it) < get(it + 1) }
+    return (0..size - 2).none { get(it) < get(it + 1) }
 }
 
 private fun BasePage.checkBasePage() {
@@ -79,5 +100,12 @@ private fun BasePage.checkBasePage() {
             forumsTab, toCartButton, toWishlistButton, toCompareButton)
 
     items.forEach { assert(it!!.isDisplayed, { "Check for: $it" }) }
+
+    checkPrice(price!!)
+}
+
+private fun checkPrice(price: WebElement) {
+    assert(price.text.endsWith("руб."))
+    assert(price.text.split("руб.")[0].filterNot { it == ' ' }.toInt() > 0)
 }
 
